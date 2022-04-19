@@ -1,26 +1,74 @@
-import React from 'react';
+import React, { ChangeEvent, FC, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import styled from 'styled-components'
 
-function App() {
+export const App: FC = () => {
+  // テキストボックスstate
+  const [text, setText] = useState<string>("");
+  // メモ一覧
+  const [memos, setMemos] = useState<string[]>([]);
+
+  // テキストボックス入力時に入力内容をstateに設定
+  const onChangeText = (e: ChangeEvent<HTMLInputElement>) => setText(e.target.value);
+
+  // 追加ボタンクリック
+  const onClickAdd = () => {
+    // state変更を正常に検知させるため新たな配列を作成
+    const newMemos = [...memos];
+    // テキストボックスの入力内容をメモ配列に追加
+    newMemos.push(text);
+    setMemos(newMemos);
+    // テキストボックスを空に
+    setText(""); 
+  };
+
+  // 削除ボタンをクリック
+  const onClickDelete = (index: number) => {
+    // state変更を正常に検知させるため新たな配列を生成
+    const newMemos = [...memos];
+    // メモ配列から該当の要素を削除
+    newMemos.splice(index, 1);
+    setMemos(newMemos);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>簡単メモアプリ</h1>
+      <input type="text" value={text} onChange={onChangeText} />
+      <SButton onClick={onClickAdd}>追加</SButton>
+      <SContainer>
+        <p>メモ一覧</p>
+        <ul>
+          {memos.map((memo, index) => (
+            <li key={memo}>
+              <SMemoWrapper>
+                <p>{memo}</p>
+                <SButton onClick={() => onClickDelete(index)}>
+                  削除
+                </SButton>
+              </SMemoWrapper>
+            </li>
+          ))}
+        </ul>
+      </SContainer>
     </div>
   );
 }
+
+const SButton = styled.button`
+  margin-left: 16px;
+`;
+
+const SContainer = styled.div`
+  border: solid 1px #ccc
+  padding: 16px;
+  margin: 8px;
+`;
+
+const SMemoWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`
 
 export default App;
