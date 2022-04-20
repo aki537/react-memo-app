@@ -3,35 +3,30 @@ import logo from './logo.svg';
 import './App.css';
 import styled from 'styled-components';
 import { MemoList } from "./MemoList";
+import { useMemoList } from '../hooks/useMemoList';
 
 export const App: FC = () => {
+  // カスタムフックからそれぞれ取得
+  const { memos, addTodo, deleteTodo } = useMemoList();
   // テキストボックスstate
   const [text, setText] = useState<string>("");
-  // メモ一覧
-  const [memos, setMemos] = useState<string[]>([]);
 
   // テキストボックス入力時に入力内容をstateに設定
   const onChangeText = (e: ChangeEvent<HTMLInputElement>) => setText(e.target.value);
 
   // 追加ボタンクリック
   const onClickAdd = () => {
-    // state変更を正常に検知させるため新たな配列を作成
-    const newMemos = [...memos];
-    // テキストボックスの入力内容をメモ配列に追加
-    newMemos.push(text);
-    setMemos(newMemos);
+    // カスタムフックのメモ追加ロジック
+    addTodo(text);
     // テキストボックスを空に
     setText(""); 
   };
 
   // 削除ボタンをクリック
   const onClickDelete = useCallback((index: number) => {
-    // state変更を正常に検知させるため新たな配列を生成
-    const newMemos = [...memos];
-    // メモ配列から該当の要素を削除
-    newMemos.splice(index, 1);
-    setMemos(newMemos);
-  }, [memos]);
+    // カスタムフックのメモ削除ロジック
+    deleteTodo(index)
+  }, []);
 
   return (
     <div>
@@ -46,5 +41,6 @@ export const App: FC = () => {
 const SButton = styled.button`
   margin-left: 16px;
 `;
+
 
 export default App;
